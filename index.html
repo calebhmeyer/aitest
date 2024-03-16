@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #chatbox {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #userInput {
+            width: 70%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user {
+            background-color: #007bff;
+            color: #fff;
+            text-align: right;
+        }
+        .ai {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Say something...">
+    <button id="sendButton">Send</button>
+
+    <!-- Inserted Dialogflow Messenger Code Here -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger
+      chat-title="Jenny"
+      agent-id="582f64b7-c1ac-4f63-bfde-91acd92197b5"
+      language-code="en">
+    </df-messenger>
+
+    <script>
+        document.getElementById('sendButton').addEventListener('click', function() {
+            const userInput = document.getElementById('userInput').value;
+            addMessage('user', userInput);
+
+            // This part seems to be for a custom API. If you're using Dialogflow Messenger,
+            // you might not need this unless you're also integrating with another service.
+            fetch('YOUR_API_ENDPOINT', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any necessary headers like Authorization here
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage('ai', data.response);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function addMessage(sender, message) {
+            const chatbox = document.getElementById('chatbox');
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+            msgDiv.textContent = message;
+            chatbox.appendChild(msgDiv);
+            document.getElementById('userInput').value = ''; // Clear input after sending
+            chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+        }
+    </script>
+</body>
+</html>
